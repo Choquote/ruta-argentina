@@ -701,6 +701,18 @@ h1 span{color:var(--lake)}
 .owner .row{display:flex;gap:8px}
 .owner input{flex:1;min-width:0;font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
 .ro .item input{cursor:default}
+.gate{position:fixed;inset:0;z-index:2000;background:color-mix(in srgb,var(--fg) 45%,transparent);display:grid;place-items:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.gate .card{background:var(--surface);color:var(--fg);border-radius:16px;padding:22px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.gate h2{font-family:var(--f-display);font-weight:800;font-size:22px;margin:0}
+.gate p{margin:0;color:var(--muted);font-size:14px}
+.gate form{display:flex;flex-direction:column;gap:6px}
+.gate label{font-size:13px;font-weight:600}
+.gate .row{display:flex;gap:8px}
+.gate input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.btn.primary{background:var(--lake);border-color:var(--lake);color:var(--bg);font-weight:600}
+.link{font:inherit;font-size:13px;background:none;border:0;color:var(--lake);text-decoration:underline;cursor:pointer;align-self:flex-start;padding:0}
+[hidden]{display:none!important}
 .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--done);transition:width .3s}
 .days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
@@ -796,11 +808,18 @@ ol.route{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
   </div>
   <div class="owner" id="owner" hidden>
     <button class="btn" id="ownerBtn" type="button">Soy el dueño: activar edición</button>
-    <form id="ownerForm" hidden>
-      <label for="tokenIn">Pega tu token de GitHub (se guarda solo en este navegador)</label>
-      <div class="row"><input id="tokenIn" type="password" autocomplete="off" placeholder="github_pat_…"><button class="btn" type="submit">Guardar</button></div>
-      <span id="ownerMsg" class="sync"></span>
-    </form>
+  </div>
+  <div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="card">
+      <h2 id="gateTitle">Entrar para marcar</h2>
+      <p>Pega tu token de GitHub. Se guarda solo en este navegador, así que no tendrás que volver a ponerlo aquí.</p>
+      <form id="ownerForm">
+        <label for="tokenIn">Token</label>
+        <div class="row"><input id="tokenIn" type="password" autocomplete="current-password" placeholder="github_pat_…"><button class="btn primary" type="submit">Entrar</button></div>
+        <span id="ownerMsg" class="sync"></span>
+      </form>
+      <button class="link" id="viewOnly" type="button">Solo ver, sin marcar</button>
+    </div>
   </div>
 </div>
 
@@ -859,7 +878,7 @@ async function ghWrite(retry){
     if((res.status===409||res.status===422)&&!retry){
       const g=await fetch(ghUrl()+"?ref=main",{headers:ghHeaders(),cache:"no-store"});ghSha=g.ok?(await g.json()).sha:null;
       ghBusy=false;return ghWrite(true)}
-    if(res.status===401||res.status===403){ghBusy=false;setSync("Token inválido o sin permiso: vuelve a activar edición",false);return}
+    if(res.status===401||res.status===403){ghBusy=false;ghToken=null;try{localStorage.removeItem(KEY+"-token")}catch(_){}renderAll(false);setSync("El token dejó de funcionar",false);window.showGate&&showGate("Tu token venció o fue revocado. Crea uno nuevo y pégalo aquí.");return}
     if(!res.ok)throw new Error(res.status);
     const j=await res.json();ghSha=j.content.sha;ghEtag=null;
     setSync("Sincronizado con GitHub",true);
@@ -870,15 +889,20 @@ function ghInit(){
   document.getElementById("owner").hidden=false;
   const btn=document.getElementById("ownerBtn"),form=document.getElementById("ownerForm"),msg=document.getElementById("ownerMsg");
   btn.textContent=ghToken?"Desactivar edición en este dispositivo":"Soy el dueño: activar edición";
+  const gate=document.getElementById("gate");
+  window.showGate=m=>{msg.textContent=m||"";gate.hidden=false;setTimeout(()=>document.getElementById("tokenIn").focus(),50)};
+  document.getElementById("viewOnly").onclick=()=>{gate.hidden=true;try{sessionStorage.setItem(KEY+"-view","1")}catch(_){}};
   btn.onclick=()=>{if(ghToken){ghToken=null;try{localStorage.removeItem(KEY+"-token")}catch(e){}btn.textContent="Soy el dueño: activar edición";renderAll(false);ghLoad()}
-    else{form.hidden=!form.hidden;if(!form.hidden)document.getElementById("tokenIn").focus()}};
+    else showGate()};
+  let skip=false;try{skip=sessionStorage.getItem(KEY+"-view")==="1"}catch(_){}
+  if(!ghToken&&!skip)showGate();
   form.onsubmit=async e=>{e.preventDefault();const tk=document.getElementById("tokenIn").value.trim();if(!tk)return;
     msg.textContent="Comprobando…";
     try{const r=await fetch("https://api.github.com/repos/"+GH.repo,{headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+tk}});
       const j=r.ok?await r.json():null;
       if(!j||!j.permissions||!j.permissions.push){msg.textContent="Ese token no puede escribir en "+GH.repo+". Revisa que tenga Contents: Read and write.";return}
       ghToken=tk;try{localStorage.setItem(KEY+"-token",tk)}catch(_){}
-      form.hidden=true;document.getElementById("tokenIn").value="";msg.textContent="";btn.textContent="Desactivar edición en este dispositivo";
+      gate.hidden=true;document.getElementById("tokenIn").value="";msg.textContent="";btn.textContent="Desactivar edición en este dispositivo";
       ghEtag=null;renderAll(false);ghLoad();
     }catch(_){msg.textContent="No se pudo conectar con GitHub. Prueba de nuevo."}};
   ghLoad();
