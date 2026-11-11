@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ruta Argentina 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@400;500;600&display=swap">
+<style>/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: none;
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: none;
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: none;
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: none;
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+</style>
+<style>
+/* Layout: mapa fijo a la izquierda + lista de paradas y trayectos a la derecha; en móvil, mapa arriba y lista debajo */
+:root{
+  --bg:#f3f6f8; --surface:#ffffff; --fg:#14232e; --muted:#5b6d79; --line:#d9e2e8;
+  --lake:#0f5d86; --celeste:#5fb3e0; --sun:#e7a42b; --done:#2f8f5b; --hotel:#7a4fc4; --dinner:#c8463a;
+  --walk:#0f5d86; --transit:#e7a42b; --taxi:#c8463a;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d171e; --surface:#14222c; --fg:#e6eef3; --muted:#93a7b4; --line:#26384450;
+  --lake:#6cc0ec; --celeste:#5fb3e0; --sun:#f0b54a; --done:#4fbf82; --hotel:#a98ae8; --dinner:#ec6f62;
+  --walk:#6cc0ec; --transit:#f0b54a; --taxi:#ec6f62; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d171e; --surface:#14222c; --fg:#e6eef3; --muted:#93a7b4; --line:#26384450;
+  --lake:#6cc0ec; --celeste:#5fb3e0; --sun:#f0b54a; --done:#4fbf82; --hotel:#a98ae8; --dinner:#ec6f62;
+  --walk:#6cc0ec; --transit:#f0b54a; --taxi:#ec6f62; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,5vw,38px);letter-spacing:-.01em;margin:0;line-height:1;text-wrap:balance}
+h1 span{color:var(--lake)}
+.sub{color:var(--muted);margin:6px 0 0;font-size:14px}
+.total{display:flex;flex-direction:column;gap:6px;min-width:200px;flex:0 1 260px}
+.total .lbl{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sync{font-size:12px;color:var(--muted)}.sync.on{color:var(--done)}
+.owner{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted)}
+.owner form{display:flex;flex-direction:column;gap:6px;max-width:460px}
+.owner .row{display:flex;gap:8px}
+.owner input{flex:1;min-width:0;font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.ro .item input{cursor:default}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--done);transition:width .3s}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.day{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:8px 12px;
+  font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:92px}
+.day b{font-family:var(--f-display);font-weight:600;font-size:15px}
+.day small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.day[aria-pressed="true"]{background:var(--lake);border-color:var(--lake);color:var(--bg)}
+.day[aria-pressed="true"] small{color:inherit;opacity:.85}
+.day.complete small::after{content:" ✓"}
+.day:focus-visible,.item:focus-within,button:focus-visible,a:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.mapbox{position:sticky;top:12px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+#map{height:min(72vh,640px);width:100%;background:color-mix(in srgb,var(--celeste) 14%,var(--bg))}
+.mapnote{position:absolute;left:54px;right:10px;top:10px;z-index:500;background:var(--surface);color:var(--muted);
+  border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12.5px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;padding:10px 12px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:0;border-top:3px solid}
+.panel{display:flex;flex-direction:column;gap:12px;min-width:0}
+.dayhead{display:flex;flex-direction:column;gap:4px}
+.dayhead .city{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--lake);font-weight:600}
+.dayhead h2{font-family:var(--f-display);font-weight:800;font-size:22px;margin:0;line-height:1.15;text-wrap:balance}
+.dayhead .tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.btn{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:6px 12px;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--lake)}
+.fixed{display:flex;flex-wrap:wrap;gap:6px}
+.fixed span{font-size:12.5px;background:color-mix(in srgb,var(--sun) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--sun) 40%,transparent);
+  border-radius:8px;padding:3px 8px;font-variant-numeric:tabular-nums}
+ol.route{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px}
+.stop{background:var(--surface);border:1px solid var(--line)}
+.stop .num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff;background:var(--lake);font-variant-numeric:tabular-nums}
+.stop.k-hotel .num{background:var(--hotel)} .stop.k-reservation .num{background:var(--dinner)}
+.stop .name{font-weight:600;min-width:0}
+.stop .meta{font-size:12.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.stop .meta a{color:var(--lake)}
+.leg{grid-template-columns:28px 1fr auto;padding:4px 10px;font-size:13px;color:var(--muted)}
+.leg .rail{justify-self:center;width:0;height:100%;min-height:26px;border-left:3px dashed var(--walk)}
+.leg.t-transit .rail{border-left-style:solid;border-color:var(--transit)}
+.leg.t-taxi .rail{border-left-style:dotted;border-color:var(--taxi)}
+.leg .txt{min-width:0;padding-block:4px}
+.item input{width:22px;height:22px;accent-color:var(--done);cursor:pointer;margin:0}
+.item label{cursor:pointer;min-width:0}
+.item.checked .name,.item.checked .txt{text-decoration:line-through;text-decoration-color:var(--muted);opacity:.6}
+.stop.checked{border-color:color-mix(in srgb,var(--done) 50%,var(--line))}
+.stop.checked .num{background:var(--done)}
+.foot{font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+.pin{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font:600 12px var(--f-body);
+  border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);background:#0f5d86}
+.pin.hotel{background:#7a4fc4}.pin.reservation{background:#c8463a}.pin.done{background:#2f8f5b}
+.leaflet-container{font-family:var(--f-body)}
+@media (max-width:820px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .mapbox{position:relative;top:auto}
+  #map{height:46vh;min-height:260px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head><body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Argentina <span>2026</span></h1>
+      <p class="sub">Buenos Aires y Bariloche · 14–22 de noviembre. Marca cada lugar y trayecto al completarlo.</p>
+    </div>
+    <div class="total" aria-live="polite">
+      <div class="lbl"><span>Progreso del viaje</span><span id="totalTxt">0 / 0</span></div>
+      <div class="sync" id="sync">Guardado en este dispositivo</div>
+      <div class="bar"><i id="totalBar"></i></div>
+    </div>
+  </header>
+
+  <nav class="days" id="days" aria-label="Días del viaje"></nav>
+
+  <div class="grid">
+    <div class="mapbox">
+      <div id="map" role="region" aria-label="Mapa del día"></div>
+      <div class="mapnote" id="mapnote" hidden>El fondo del mapa no carga en esta vista. Los puntos y trayectos sí están; usa «Ver ruta en Google Maps» para navegar.</div>
+      <div class="legend">
+        <span><i style="border-top-style:dashed;border-color:var(--walk)"></i>A pie</span>
+        <span><i style="border-color:var(--transit)"></i>Colectivo / subte (SUBE)</span>
+        <span><i style="border-top-style:dotted;border-color:var(--taxi)"></i>Taxi / app</span>
+      </div>
+    </div>
+    <section class="panel" id="panel" aria-live="polite"></section>
+  </div>
+
+  <div class="foot">
+    <span>Las líneas del mapa son rectas entre puntos, no el recorrido real por calles.</span>
+    <button class="btn" id="reset" type="button">Desmarcar todo</button>
+  </div>
+  <div class="owner" id="owner" hidden>
+    <button class="btn" id="ownerBtn" type="button">Soy el dueño: activar edición</button>
+    <form id="ownerForm" hidden>
+      <label for="tokenIn">Pega tu token de GitHub (se guarda solo en este navegador)</label>
+      <div class="row"><input id="tokenIn" type="password" autocomplete="off" placeholder="github_pat_…"><button class="btn" type="submit">Guardar</button></div>
+      <span id="ownerMsg" class="sync"></span>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous"></script>
+<script>
+const PLACES={"HBA":{"name":"HR Plaza Luxor","lat":-34.601,"lng":-58.3715,"kind":"hotel"},"HBR":{"name":"Alma del Lago Suites & Spa","lat":-41.1352,"lng":-71.3249,"kind":"hotel"},"gp":{"name":"Galerías Pacífico","lat":-34.5985,"lng":-58.3748,"kind":"free"},"fl":{"name":"Calle Florida","lat":-34.601,"lng":-58.3753,"kind":"free"},"colon":{"name":"Teatro Colón (exterior)","lat":-34.6013,"lng":-58.3836,"kind":"free"},"ob":{"name":"Obelisco","lat":-34.6037,"lng":-58.3815,"kind":"free"},"pm":{"name":"Plaza de Mayo","lat":-34.6081,"lng":-58.3721,"kind":"free"},"cr":{"name":"Casa Rosada (exterior)","lat":-34.6084,"lng":-58.3705,"kind":"free"},"pu":{"name":"Puente de la Mujer / Puerto Madero","lat":-34.6077,"lng":-58.3645,"kind":"free"},"st":{"name":"Feria de San Telmo / Plaza Dorrego","lat":-34.6216,"lng":-58.371,"kind":"free"},"mt":{"name":"Mercado de San Telmo","lat":-34.6196,"lng":-58.3714,"kind":"free"},"jj":{"name":"Jardín Japonés","lat":-34.5747,"lng":-58.4082,"kind":"paid"},"jb":{"name":"Jardín Botánico Carlos Thays","lat":-34.5825,"lng":-58.419,"kind":"free"},"ps":{"name":"Plaza Serrano / Palermo Soho","lat":-34.5886,"lng":-58.4333,"kind":"free"},"dj":{"name":"Don Julio · reserva 19:00","lat":-34.5869,"lng":-58.4254,"kind":"reservation"},"cv":{"name":"Centro Cívico","lat":-41.1341,"lng":-71.3105,"kind":"free"},"mi":{"name":"Calle Mitre / chocolaterías","lat":-41.1338,"lng":-71.3077,"kind":"free"},"cat":{"name":"Catedral de Bariloche","lat":-41.1319,"lng":-71.3034,"kind":"free"},"cost":{"name":"Costanera del Nahuel Huapi","lat":-41.1343,"lng":-71.3234,"kind":"free"},"camp":{"name":"Cerro Campanario","lat":-41.0464,"lng":-71.4896,"kind":"paid"},"bon":{"name":"Playa Bonita","lat":-41.1075,"lng":-71.4019,"kind":"free"},"cs":{"name":"Colonia Suiza / feria","lat":-41.0969,"lng":-71.5038,"kind":"free"},"ll":{"name":"Llao Llao / panorámicas","lat":-41.0586,"lng":-71.5344,"kind":"free"},"ce":{"name":"Capilla San Eduardo","lat":-41.0573,"lng":-71.533,"kind":"free"},"pp":{"name":"Puerto Pañuelo","lat":-41.05,"lng":-71.5362,"kind":"free"},"cam":{"name":"Caminito","lat":-34.6398,"lng":-58.3625,"kind":"free"},"lb":{"name":"La Bombonera (exterior)","lat":-34.6357,"lng":-58.3647,"kind":"free"},"re":{"name":"Cementerio de Recoleta (exterior)","lat":-34.5876,"lng":-58.3932,"kind":"free"},"be":{"name":"Museo Nacional de Bellas Artes","lat":-34.5838,"lng":-58.3933,"kind":"free"},"fg":{"name":"Floralis Genérica","lat":-34.5817,"lng":-58.3946,"kind":"free"},"at":{"name":"El Ateneo Grand Splendid","lat":-34.5952,"lng":-58.3968,"kind":"free"},"sm":{"name":"Plaza San Martín","lat":-34.5943,"lng":-58.377,"kind":"free"},"mafalda":{"name":"Estatua de Mafalda","lat":-34.6164,"lng":-58.3717,"kind":"free"},"casamin":{"name":"Casa Mínima (exterior)","lat":-34.6174,"lng":-58.3731,"kind":"free"},"bs":{"name":"Bahía Serena","lat":-41.0866,"lng":-71.4476,"kind":"free"},"moreno":{"name":"Playa del Lago Moreno (Colonia Suiza)","lat":-41.094,"lng":-71.5138,"kind":"free"},"arraying":{"name":"Centro de Informes Llao Llao · acceso a sendero","lat":-41.0502,"lng":-71.5516,"kind":"free"},"array":{"name":"Sendero de los Arrayanes · Parque Llao Llao","lat":-41.0479,"lng":-71.5554,"kind":"feecheck"},"hav":{"name":"Museo del Chocolate Havanna (opcional)","lat":-41.135,"lng":-71.3241,"kind":"paid"},"cult":{"name":"Centro Cultural Recoleta (opcional)","lat":-34.587,"lng":-58.3936,"kind":"free"},"flret":{"name":"Calle Florida (tramo Retiro)","lat":-34.5967,"lng":-58.3767,"kind":"free"}};
+const DAYS=[{"id":"d14","date":"Sáb 14 nov.","city":"Buenos Aires","title":"Microcentro y Puerto Madero","stops":[{"id":"HBA","time":"08:30"},{"id":"gp","time":"10:00"},{"id":"fl","time":"10:45"},{"id":"colon","time":"11:30"},{"id":"ob","time":"12:15"},{"id":"pm","time":"13:15"},{"id":"cr","time":"13:40"},{"id":"pu","time":"14:30"},{"id":"HBA","time":"16:00"}],"legs":[{"type":"walk","label":"A pie · 5–10 min"},{"type":"walk","label":"A pie · 5 min"},{"type":"walk","label":"A pie · 15–20 min"},{"type":"walk","label":"A pie · 5–8 min"},{"type":"walk","label":"A pie · 15–20 min"},{"type":"walk","label":"A pie · 3 min"},{"type":"walk","label":"A pie · 15 min"},{"type":"walk","label":"A pie · 15–25 min"}],"events":[{"time":"06:00","label":"Traslado EZE → hotel"}]},{"id":"d15","date":"Dom 15 nov.","city":"Buenos Aires","title":"San Telmo, Jardín Japonés y Don Julio","stops":[{"id":"HBA","time":"09:15"},{"id":"mafalda","time":"09:45"},{"id":"casamin","time":"10:05"},{"id":"mt","time":"10:25"},{"id":"st","time":"11:10"},{"id":"jj","time":"13:45"},{"id":"jb","time":"15:00"},{"id":"ps","time":"15:40"},{"id":"HBA","time":"17:00–18:05"},{"id":"dj","time":"19:00"},{"id":"HBA","time":"Después de cenar"}],"legs":[{"type":"walk","label":"A pie · 25–35 min"},{"type":"walk","label":"A pie · 3–5 min"},{"type":"walk","label":"A pie · 5–10 min"},{"type":"walk","label":"A pie · 5–10 min"},{"type":"transit","label":"SUBE · Subte C + D, hacia Palermo"},{"type":"walk","label":"A pie · 15–20 min"},{"type":"walk","label":"A pie · 15–25 min"},{"type":"transit","label":"SUBE · Línea D + B; regreso al Microcentro"},{"type":"taxi","label":"Taxi/app recomendado · salir 18:05"},{"type":"taxi","label":"Taxi/app o subte si está operativo"}],"events":[{"time":"12:00","label":"Almuerzo ligero en San Telmo"},{"time":"18:05","label":"Salir del hotel hacia Don Julio"},{"time":"19:00","label":"Don Julio · reserva fija"}]},{"id":"d16","date":"Lun 16 nov.","city":"Bariloche","title":"Centro Cívico y chocolaterías","stops":[{"id":"HBR","time":"16:30"},{"id":"cv","time":"17:00"},{"id":"mi","time":"17:30"},{"id":"cat","time":"18:20"},{"id":"cost","time":"19:00"},{"id":"HBR","time":"19:30"}],"legs":[{"type":"walk","label":"A pie · 15–20 min"},{"type":"walk","label":"A pie · 5 min"},{"type":"walk","label":"A pie · 8–12 min"},{"type":"walk","label":"A pie · 15–25 min"},{"type":"walk","label":"A pie · 5–10 min"}],"events":[{"time":"08:45","label":"Hotel de Buenos Aires → Aeroparque AEP"},{"time":"14:15","label":"Aeropuerto Bariloche BRC → Alma del Lago"}]},{"id":"d17","date":"Mar 17 nov.","city":"Bariloche","title":"Cerro Campanario, Bahía Serena y Playa Bonita","stops":[{"id":"HBR","time":"09:00"},{"id":"camp","time":"10:00"},{"id":"bs","time":"13:00"},{"id":"bon","time":"14:30"},{"id":"HBR","time":"17:00"}],"legs":[{"type":"transit","label":"SUBE · Colectivo 20 hacia Llao Llao"},{"type":"transit","label":"SUBE · Colectivo 20 hacia Centro"},{"type":"transit","label":"SUBE · Colectivo 20 hacia Centro"},{"type":"transit","label":"SUBE · Colectivo 20 hacia Centro"}],"events":[]},{"id":"d18","date":"Mié 18 nov.","city":"Bariloche","title":"Feria de Colonia Suiza y Lago Moreno","stops":[{"id":"HBR","time":"09:15"},{"id":"cv","time":"09:35"},{"id":"cs","time":"11:00"},{"id":"moreno","time":"14:30"},{"id":"cs","time":"15:40"},{"id":"cv","time":"16:00–16:40"},{"id":"HBR","time":"17:00"}],"legs":[{"type":"walk","label":"A pie · 15–20 min"},{"type":"transit","label":"SUBE · Colectivo 10 a Colonia Suiza"},{"type":"walk","label":"A pie · según acceso"},{"type":"walk","label":"A pie · según acceso"},{"type":"transit","label":"SUBE · Colectivo 10 hacia Centro"},{"type":"walk","label":"A pie · 15–20 min"}],"events":[]},{"id":"d19","date":"Jue 19 nov.","city":"Bariloche","title":"Llao Llao, Puerto Pañuelo y Sendero de los Arrayanes","stops":[{"id":"HBR","time":"09:15"},{"id":"ll","time":"10:15"},{"id":"ce","time":"10:50"},{"id":"pp","time":"11:30"},{"id":"arraying","time":"12:30"},{"id":"array","time":"13:00–15:00"},{"id":"arraying","time":"15:15"},{"id":"pp","time":"15:35"},{"id":"HBR","time":"16:45"}],"legs":[{"type":"transit","label":"SUBE · Colectivo 20 hacia Llao Llao"},{"type":"walk","label":"A pie · 10–20 min"},{"type":"walk","label":"A pie · 10–15 min"},{"type":"walk","label":"A pie · 1 km aprox."},{"type":"walk","label":"Sendero · 2 horas aprox."},{"type":"walk","label":"A pie · regreso al centro de informes"},{"type":"walk","label":"A pie · 1 km aprox."},{"type":"transit","label":"SUBE · Colectivo 20 hacia Centro"}],"events":[]},{"id":"d20","date":"Vie 20 nov.","city":"Bariloche","title":"Museo del Chocolate y última mañana","stops":[{"id":"HBR","time":"09:00"},{"id":"hav","time":"10:00"},{"id":"cost","time":"11:30"},{"id":"cv","time":"12:00"},{"id":"HBR","time":"15:30"}],"legs":[{"type":"walk","label":"A pie · 2–5 min"},{"type":"walk","label":"A pie · 5–10 min"},{"type":"walk","label":"A pie · 15–20 min"},{"type":"walk","label":"A pie · 15–20 min"}],"events":[{"time":"16:15","label":"Traslado Alma del Lago → aeropuerto BRC"},{"time":"21:45","label":"Aeroparque AEP → HR Plaza Luxor"}]},{"id":"d21","date":"Sáb 21 nov.","city":"Buenos Aires","title":"La Boca, Recoleta y El Ateneo","stops":[{"id":"HBA","time":"09:00"},{"id":"cam","time":"10:00"},{"id":"lb","time":"11:20"},{"id":"re","time":"13:45"},{"id":"be","time":"14:45"},{"id":"fg","time":"15:45"},{"id":"cult","time":"16:30"},{"id":"at","time":"17:15"},{"id":"HBA","time":"19:00"}],"legs":[{"type":"transit","label":"SUBE · Colectivo 29 sentido La Boca"},{"type":"walk","label":"A pie · 12–15 min"},{"type":"transit","label":"SUBE · Línea 29 + subtes D y H"},{"type":"walk","label":"A pie · 10 min"},{"type":"walk","label":"A pie · 5–10 min"},{"type":"walk","label":"A pie · 10–15 min"},{"type":"walk","label":"A pie · 15–25 min"},{"type":"transit","label":"SUBE · Subte D hacia Catedral"}],"events":[]},{"id":"d22","date":"Dom 22 nov.","city":"Buenos Aires","title":"Plaza San Martín y vuelo de regreso","stops":[{"id":"HBA","time":"09:00"},{"id":"sm","time":"09:45"},{"id":"flret","time":"10:30"},{"id":"HBA","time":"11:15"}],"legs":[{"type":"walk","label":"A pie · 10–15 min"},{"type":"walk","label":"A pie · 5–10 min"},{"type":"walk","label":"A pie · 10–15 min"}],"events":[{"time":"12:15","label":"Hotel → Ezeiza EZE"},{"time":"14:00","label":"Hora objetivo de llegada a Ezeiza"},{"time":"17:00","label":"Vuelo de regreso"}]}];
+const GH={"repo":"Choquote/ruta-argentina","file":"marcas.json"};
+const KEY="ruta-arg-2026";
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){state={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+/* sincronización en la nube (solo dentro de claude.ai) */
+let ref=null,remoteExists=false,chain=Promise.resolve();
+function setSync(txt,on){const s=document.getElementById("sync");s.textContent=txt;s.classList.toggle("on",!!on)}
+function push(patch,full){ // patch: {k:true|false}; full: reemplaza todo
+  if(GH){ghQueue();return}
+  if(!ref)return;
+  chain=chain.then(async()=>{
+    try{
+      if(full||!remoteExists){await ref.set({checks:Object.fromEntries(Object.keys(state).map(k=>[k,true]))});remoteExists=true}
+      else await ref.update({checks:patch});
+      setSync("Sincronizado en tu cuenta",true);
+    }catch(e){setSync(e&&e.code==="invalid_argument"?"Sin permiso para guardar: solo lectura":"No se pudo sincronizar; guardado en este dispositivo",false)}
+  });
+}
+/* sincronización con GitHub (versión publicada en GitHub Pages) */
+let ghToken=null,ghSha=null,ghEtag=null,ghTimer=null,ghBusy=false,ghDirty=false;
+try{ghToken=GH&&localStorage.getItem(KEY+"-token")}catch(e){}
+const RO=()=>!!GH&&!ghToken;
+const ghUrl=()=>"https://api.github.com/repos/"+GH.repo+"/contents/"+GH.file;
+function ghHeaders(extra){const h={"Accept":"application/vnd.github+json",...(extra||{})};if(ghToken)h.Authorization="Bearer "+ghToken;return h}
+async function ghLoad(){
+  if(ghBusy||ghDirty)return;
+  try{
+    const res=await fetch(ghUrl()+"?ref=main",{headers:ghHeaders(ghEtag?{"If-None-Match":ghEtag}:{}),cache:"no-store"});
+    if(res.status===304){setSync(RO()?"Marcas del viaje (solo lectura)":"Sincronizado con GitHub",true);return}
+    if(res.status===404){ghSha=null;setSync(RO()?"Aún no hay marcas":"Sincronizado con GitHub",true);return}
+    if(!res.ok)throw new Error(res.status);
+    ghEtag=res.headers.get("ETag");const j=await res.json();ghSha=j.sha;
+    const data=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,"")))));
+    if(ghBusy||ghDirty)return;
+    state={};(data.checks||[]).forEach(k=>state[k]=1);save();renderAll(false);
+    setSync((RO()?"Marcas del viaje (solo lectura)":"Sincronizado con GitHub")+(data.updated?" · "+new Date(data.updated).toLocaleString("es-AR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):""),true);
+  }catch(e){setSync("No se pudo leer GitHub; mostrando lo último guardado aquí",false)}
+}
+function ghQueue(){if(RO())return;ghDirty=true;setSync("Guardando…",false);clearTimeout(ghTimer);ghTimer=setTimeout(ghWrite,1200)}
+async function ghWrite(retry){
+  if(ghBusy){ghTimer=setTimeout(ghWrite,800);return}
+  ghBusy=true;ghDirty=false;
+  const body={checks:Object.keys(state).sort(),updated:new Date().toISOString()};
+  const content=btoa(unescape(encodeURIComponent(JSON.stringify(body,null,1))));
+  try{
+    const res=await fetch(ghUrl(),{method:"PUT",headers:ghHeaders({"Content-Type":"application/json"}),
+      body:JSON.stringify({message:"Actualizar marcas ("+body.checks.length+")",content,branch:"main",...(ghSha?{sha:ghSha}:{})})});
+    if((res.status===409||res.status===422)&&!retry){
+      const g=await fetch(ghUrl()+"?ref=main",{headers:ghHeaders(),cache:"no-store"});ghSha=g.ok?(await g.json()).sha:null;
+      ghBusy=false;return ghWrite(true)}
+    if(res.status===401||res.status===403){ghBusy=false;setSync("Token inválido o sin permiso: vuelve a activar edición",false);return}
+    if(!res.ok)throw new Error(res.status);
+    const j=await res.json();ghSha=j.content.sha;ghEtag=null;
+    setSync("Sincronizado con GitHub",true);
+  }catch(e){ghDirty=true;setSync("No se pudo guardar en GitHub; reintentando…",false);ghTimer=setTimeout(ghWrite,8000)}
+  ghBusy=false;
+}
+function ghInit(){
+  document.getElementById("owner").hidden=false;
+  const btn=document.getElementById("ownerBtn"),form=document.getElementById("ownerForm"),msg=document.getElementById("ownerMsg");
+  btn.textContent=ghToken?"Desactivar edición en este dispositivo":"Soy el dueño: activar edición";
+  btn.onclick=()=>{if(ghToken){ghToken=null;try{localStorage.removeItem(KEY+"-token")}catch(e){}btn.textContent="Soy el dueño: activar edición";renderAll(false);ghLoad()}
+    else{form.hidden=!form.hidden;if(!form.hidden)document.getElementById("tokenIn").focus()}};
+  form.onsubmit=async e=>{e.preventDefault();const tk=document.getElementById("tokenIn").value.trim();if(!tk)return;
+    msg.textContent="Comprobando…";
+    try{const r=await fetch("https://api.github.com/repos/"+GH.repo,{headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+tk}});
+      const j=r.ok?await r.json():null;
+      if(!j||!j.permissions||!j.permissions.push){msg.textContent="Ese token no puede escribir en "+GH.repo+". Revisa que tenga Contents: Read and write.";return}
+      ghToken=tk;try{localStorage.setItem(KEY+"-token",tk)}catch(_){}
+      form.hidden=true;document.getElementById("tokenIn").value="";msg.textContent="";btn.textContent="Desactivar edición en este dispositivo";
+      ghEtag=null;renderAll(false);ghLoad();
+    }catch(_){msg.textContent="No se pudo conectar con GitHub. Prueba de nuevo."}};
+  ghLoad();
+  setInterval(()=>{if(document.visibilityState==="visible")ghLoad()},ghToken?45000:90000);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")ghLoad()});
+}
+async function initSync(){
+  if(GH){ghInit();return}
+  if(!window.claude||!window.claude.use)return;
+  let db=null;try{db=await window.claude.use("db")}catch(e){}
+  if(!db)return;
+  ref=db.doc("progress/main");setSync("Conectando…",false);
+  let first=true;const timer=setTimeout(()=>setSync("Sin conexión: guardado en este dispositivo",false),10000);
+  ref.onSnapshot(snap=>{
+    if(!snap.metadata.fromCache)clearTimeout(timer);
+    remoteExists=snap.exists;
+    if(snap.exists){
+      const c=(snap.data()||{}).checks||{};state={};for(const k in c)if(c[k])state[k]=1;save();renderAll(false);
+    }else if(first&&Object.keys(state).length){push(null,true)} // sube lo marcado antes en este dispositivo
+    first=false;if(!snap.metadata.fromCache)setSync("Sincronizado en tu cuenta",true);
+  },err=>{clearTimeout(timer);ref=null;setSync("No se pudo sincronizar; guardado en este dispositivo",false)});
+}
+let current=0;
+try{const s=localStorage.getItem(KEY+"-day");if(s!==null&&DAYS[+s])current=+s}catch(e){}
+
+const ids=d=>[...d.stops.map((_,i)=>d.id+"-s"+i),...d.legs.map((_,i)=>d.id+"-l"+i)];
+const count=d=>{const a=ids(d);return[a.filter(k=>state[k]).length,a.length]};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const gm=p=>"https://www.google.com/maps/search/?api=1&query="+p.lat+","+p.lng;
+
+function routeUrl(d){
+  const pts=d.stops.map(s=>PLACES[s.id]).filter((p,i,a)=>i===0||p!==a[i-1]);
+  const o=pts[0],de=pts[pts.length-1],w=pts.slice(1,-1).slice(0,9);
+  const mode=d.legs.some(l=>l.type==="transit")?"transit":"walking";
+  return "https://www.google.com/maps/dir/?api=1&origin="+o.lat+","+o.lng+"&destination="+de.lat+","+de.lng+
+    (w.length?"&waypoints="+w.map(p=>p.lat+","+p.lng).join("%7C"):"")+"&travelmode="+mode;
+}
+
+/* mapa */
+const map=L.map("map",{zoomControl:true,attributionControl:true});
+const tiles=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+let tileErr=0,tileOk=0;
+tiles.on("tileerror",()=>{tileErr++;if(!tileOk&&tileErr>2)document.getElementById("mapnote").hidden=false});
+tiles.on("tileload",()=>{tileOk++;document.getElementById("mapnote").hidden=true});
+const layer=L.layerGroup().addTo(map);
+const COLORS={walk:"--walk",transit:"--transit",taxi:"--taxi"};
+const DASH={walk:"8 8",transit:null,taxi:"2 7"};
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let markers={};
+
+function drawMap(fit){
+  const d=DAYS[current];layer.clearLayers();markers={};
+  const seen={};const num={};let n=0;
+  d.stops.forEach((s,i)=>{if(!(s.id in num))num[s.id]=++n});
+  d.legs.forEach((l,i)=>{
+    const a=PLACES[d.stops[i].id],b=PLACES[d.stops[i+1].id];if(!a||!b||a===b)return;
+    const done=state[d.id+"-l"+i];
+    L.polyline([[a.lat,a.lng],[b.lat,b.lng]],{color:cssv(COLORS[l.type]||"--walk"),weight:4,opacity:done?.35:.9,dashArray:DASH[l.type]||null}).addTo(layer);
+  });
+  d.stops.forEach((s,i)=>{
+    const p=PLACES[s.id];if(!p)return;
+    const allDone=d.stops.every((t,j)=>t.id!==s.id||state[d.id+"-s"+j]);
+    if(seen[s.id]){if(allDone)markers[s.id].setIcon(icon(p,num[s.id],true));return}
+    seen[s.id]=1;
+    const m=L.marker([p.lat,p.lng],{icon:icon(p,num[s.id],allDone),title:p.name}).addTo(layer)
+      .bindPopup("<b>"+esc(p.name)+"</b><br><a href='"+gm(p)+"' target='_blank' rel='noopener'>Abrir en Google Maps</a>");
+    markers[s.id]=m;
+  });
+  if(fit){const b=L.latLngBounds(d.stops.map(s=>[PLACES[s.id].lat,PLACES[s.id].lng]));map.fitBounds(b,{padding:[30,30],maxZoom:16})}
+}
+function icon(p,n,done){
+  const cls=done?"done":(p.kind==="hotel"?"hotel":p.kind==="reservation"?"reservation":"");
+  return L.divIcon({className:"",html:"<div class='pin "+cls+"'>"+(p.kind==="hotel"?"H":n)+"</div>",iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-12]});
+}
+
+/* días */
+function renderDays(){
+  document.getElementById("days").innerHTML=DAYS.map((d,i)=>{const[c,t]=count(d);
+    return "<button class='day"+(c===t?" complete":"")+"' type='button' aria-pressed='"+(i===current)+"' data-i='"+i+"'><b>"+esc(d.date)+"</b><small>"+esc(d.city)+" · "+c+"/"+t+"</small></button>"}).join("");
+  let a=0,b=0;DAYS.forEach(d=>{const[c,t]=count(d);a+=c;b+=t});
+  document.getElementById("totalTxt").textContent=a+" / "+b;
+  document.getElementById("totalBar").style.width=(b?a/b*100:0)+"%";
+}
+function renderPanel(){
+  const d=DAYS[current];const num={};let n=0;
+  d.stops.forEach(s=>{if(!(s.id in num))num[s.id]=++n});
+  let h="<div class='dayhead'><span class='city'>"+esc(d.date)+" · "+esc(d.city)+"</span><h2>"+esc(d.title)+"</h2>";
+  if(d.events.length)h+="<div class='fixed'>"+d.events.map(e=>"<span>"+esc(e.time)+" · "+esc(e.label)+"</span>").join("")+"</div>";
+  h+="<div class='tools'><a class='btn' href='"+routeUrl(d)+"' target='_blank' rel='noopener'>Ver ruta en Google Maps ↗</a><button class='btn' type='button' id='markDay'>"+(count(d)[0]===count(d)[1]?"Desmarcar día":"Marcar día completo")+"</button></div></div><ol class='route'>";
+  d.stops.forEach((s,i)=>{
+    const p=PLACES[s.id],k=d.id+"-s"+i,ck=!!state[k];
+    h+="<li class='item stop k-"+p.kind+(ck?" checked":"")+"'><span class='num'>"+(p.kind==="hotel"?"H":num[s.id])+"</span>"+
+      "<label for='"+k+"'><div class='name'>"+esc(p.name)+"</div><div class='meta'><span>"+esc(s.time)+"</span><a href='"+gm(p)+"' target='_blank' rel='noopener'>Maps ↗</a><a href='#' data-fly='"+s.id+"'>Ver en mapa</a></div></label>"+
+      "<input type='checkbox' id='"+k+"' data-k='"+k+"'"+(ck?" checked":"")+" aria-label='Visitado: "+esc(p.name)+"'></li>";
+    const l=d.legs[i];
+    if(l){const lk=d.id+"-l"+i,lc=!!state[lk];
+      h+="<li class='item leg t-"+l.type+(lc?" checked":"")+"'><span class='rail'></span><label for='"+lk+"' class='txt'>"+esc(l.label)+"</label>"+
+        "<input type='checkbox' id='"+lk+"' data-k='"+lk+"'"+(lc?" checked":"")+" aria-label='Trayecto hecho: "+esc(l.label)+"'></li>"}
+  });
+  document.getElementById("panel").innerHTML=h+"</ol>";
+}
+function renderAll(fit){renderDays();renderPanel();drawMap(fit);applyRO()}
+function applyRO(){const ro=RO();document.body.classList.toggle("ro",ro);
+  document.querySelectorAll("#panel input[type=checkbox]").forEach(i=>i.disabled=ro);
+  const md=document.getElementById("markDay");if(md)md.hidden=ro;document.getElementById("reset").hidden=ro}
+
+document.getElementById("days").addEventListener("click",e=>{const b=e.target.closest(".day");if(!b)return;
+  current=+b.dataset.i;try{localStorage.setItem(KEY+"-day",current)}catch(_){}
+  renderAll(true);b.scrollIntoView({inline:"nearest",block:"nearest"})});
+document.getElementById("panel").addEventListener("change",e=>{const k=e.target.dataset.k;if(!k)return;
+  if(e.target.checked)state[k]=1;else delete state[k];save();push({[k]:e.target.checked});
+  e.target.closest(".item").classList.toggle("checked",e.target.checked);
+  renderDays();drawMap(false);
+  const d=DAYS[current],[c,t]=count(d);document.getElementById("markDay").textContent=c===t?"Desmarcar día":"Marcar día completo"});
+document.getElementById("panel").addEventListener("click",e=>{
+  const f=e.target.closest("[data-fly]");
+  if(f){e.preventDefault();const m=markers[f.dataset.fly];if(m){map.flyTo(m.getLatLng(),Math.max(map.getZoom(),15),{duration:.6});m.openPopup()}
+    if(innerWidth<=820)document.getElementById("map").scrollIntoView({behavior:"smooth",block:"center"});return}
+  if(e.target.id==="markDay"){const d=DAYS[current],a=ids(d),all=a.every(k=>state[k]);
+    a.forEach(k=>{if(all)delete state[k];else state[k]=1});save();push(Object.fromEntries(a.map(k=>[k,!all])));renderAll(false)}
+});
+let armed=false;
+document.getElementById("reset").addEventListener("click",e=>{
+  if(!armed){armed=true;e.target.textContent="¿Seguro? Toca de nuevo";setTimeout(()=>{armed=false;e.target.textContent="Desmarcar todo"},3000);return}
+  armed=false;state={};save();push(null,true);e.target.textContent="Desmarcar todo";renderAll(false)});
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>drawMap(false));
+renderAll(true);
+initSync();
+</script>
+
+</body></html>
